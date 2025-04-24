@@ -113,9 +113,6 @@ def welcome_sidebar():
             st.session_state.mod_messages = []
             st.rerun()
     st.divider()
-    st.link_button("📝 Share your feedback",
-                   "https://survey.fieldsense.whs.amazon.dev/survey/fc912b4f-41f0-45d0-b306-796c27c62e24"
-                   )
     # Bottom divider and session ID
     st.divider()
     # st.write(f"SessionID: {st.session_state.conversation_id}")

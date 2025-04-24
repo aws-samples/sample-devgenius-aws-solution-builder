@@ -5,6 +5,7 @@ from botocore.config import Config
 from PIL import Image
 from utils import invoke_bedrock_agent
 from utils import read_agent_response
+from utils import enable_artifacts_download
 from utils import retrieve_environment_variables
 from utils import save_conversation
 from utils import invoke_bedrock_model_streaming
@@ -245,6 +246,7 @@ else:
                     generate_cfn(st.session_state.messages)
                 with devgenius_option_tabs[4]:
                     generate_doc(st.session_state.messages)
+                enable_artifacts_download()
 
             save_conversation(st.session_state['conversation_id'], prompt, agent_answer)
 
@@ -350,6 +352,9 @@ else:
                 if not st.session_state.generate_doc_called:
                     generate_doc(st.session_state.mod_messages)
                     st.session_state.generate_doc_called = True
+
+            if st.session_state.interaction:
+                enable_artifacts_download()
 
         # Handle new chat input
         if prompt := st.chat_input():

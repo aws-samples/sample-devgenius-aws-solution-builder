@@ -9,6 +9,11 @@ from defusedxml.ElementTree import fromstring
 from defusedxml.ElementTree import tostring
 import datetime
 import time
+import tempfile
+import glob
+import zipfile
+import shutil
+from pathlib import Path
 
 AWS_REGION = os.getenv("AWS_REGION")
 config = Config(read_timeout=1000, retries=(dict(max_attempts=5)))
@@ -18,7 +23,6 @@ sts_client = boto3.client('sts', region_name=AWS_REGION)
 ACCOUNT_ID = sts_client.get_caller_identity()["Account"]
 # Cross Region Inference for improved resilience https://docs.aws.amazon.com/bedrock/latest/userguide/cross-region-inference.html  # noqa
 BEDROCK_MODEL_ID = f"arn:aws:bedrock:{AWS_REGION}:{ACCOUNT_ID}:inference-profile/us.anthropic.claude-3-7-sonnet-20250219-v1:0"  # noqa
-# BEDROCK_MODEL_ID = f"arn:aws:bedrock:{AWS_REGION}:{ACCOUNT_ID}:inference-profile/us.anthropic.claude-3-5-sonnet-20241022-v2:0"
 
 dynamodb_resource = boto3.resource('dynamodb', region_name=AWS_REGION)
 bedrock_agent_runtime_client = boto3.client('bedrock-agent-runtime', region_name=AWS_REGION)
@@ -44,7 +48,7 @@ def invoke_bedrock_agent(
 
 
 @st.fragment
-def invoke_bedrock_model_streaming(messages,enable_reasoning=False,reasoning_budget=4096):
+def invoke_bedrock_model_streaming(messages, enable_reasoning=False, reasoning_budget=4096):
     body = {
         "anthropic_version": "bedrock-2023-05-31",
         "max_tokens": BEDROCK_MAX_TOKENS,
@@ -58,7 +62,6 @@ def invoke_bedrock_model_streaming(messages,enable_reasoning=False,reasoning_bud
             "budget_tokens": reasoning_budget
         }
         body["temperature"] = 1   # temperature may only be set to 1 when thinking is enabled.
-
 
     retry_count = 0
     max_retries = 3
@@ -273,3 +276,72 @@ def store_in_s3(content, content_type):
     current_datetime = current_datetime.strftime("%Y%m%d-%H%M%S")
     object_name = f"{st.session_state['conversation_id']}/{content_type}-{current_datetime}.md"
     s3_client.put_object(Body=content, Bucket=S3_BUCKET_NAME, Key=object_name)
+
+
+# Zip files in S3 pertaining to conversation
+def create_artifacts_zip(object_name):
+    # Creating tmp file
+    tmpdir = tempfile.mkdtemp()
+    saved_umask = os.umask(0o077)
+
+    S3_BUCKET_NAME = retrieve_environment_variables("S3_BUCKET_NAME")
+    conversation_id = st.session_state['conversation_id']
+    # create directory locally to store s3 artifacts
+    Path(f"{tmpdir}/{conversation_id}").mkdir(parents=True, exist_ok=True)
+    print(f"Created directory: {tmpdir}/{conversation_id}")
+
+    # download objects from S3 pertaining to the current conversation
+    bucket = s3_resource.Bucket(S3_BUCKET_NAME)
+    conversation_artifacts = list(bucket.objects.filter(Prefix=conversation_id))
+    for artifact in conversation_artifacts:
+        out_name = f"{tmpdir}/{conversation_id}/{artifact.key.split('/')[-1]}"
+        bucket.download_file(artifact.key, out_name)
+    print(f"Downloaded artifacts from S3 for conversation: {conversation_id}")
+
+    # Create zip file with all transcript artifacts
+    directory = f"{tmpdir}/{conversation_id}/"
+    file_format = "*.md"
+    files_to_zip = glob.glob(directory + file_format)
+    with zipfile.ZipFile(f"{tmpdir}/{conversation_id}/{object_name}", 'w') as zip_file:
+        for file in files_to_zip:
+            zip_file.write(file, arcname=f"{conversation_id}/{os.path.basename(file)}")
+
+    print(f"Created zip file: {object_name}")
+
+    # Store the zip file in S3
+    file_path = f"{conversation_id}/{object_name}"
+    print(f"Uploading {file_path} to S3 bucket: {S3_BUCKET_NAME}")
+    s3_client.upload_file(f"{tmpdir}/{file_path}", S3_BUCKET_NAME, file_path)
+
+    # cleanup - Delete the directory
+    try:
+        shutil.rmtree(f"{tmpdir}/{conversation_id}")
+        os.umask(saved_umask)
+        os.rmdir(tmpdir)
+    except OSError as e:
+        print(f"Couldn't delete directory: {tmpdir}/{conversation_id}. Error: {e}")
+
+
+# Enable button to email conversation history
+@st.fragment
+def enable_artifacts_download():
+    tmp_transcript = []
+    tmp_transcript.append("# Transcript")
+    for interaction in st.session_state.interaction:
+        tmp_transcript.append(f"## {interaction['type']}")
+        tmp_transcript.append(f"{interaction['details']}")
+    transcript = '\n\n'.join(str(x) for x in tmp_transcript)
+    S3_BUCKET_NAME = retrieve_environment_variables('S3_BUCKET_NAME')
+    transcript_object_name = f"{st.session_state['conversation_id']}/transcript.md"
+    s3_client.put_object(Body=transcript, Bucket=S3_BUCKET_NAME, Key=transcript_object_name)
+    email_transcript_zip_file = "conversation_artifacts.zip"
+    email_transcript_object_name = f"{st.session_state['conversation_id']}/{email_transcript_zip_file}"
+    create_artifacts_zip(email_transcript_zip_file)
+    # Presigned url is valid for 7 days (604800 seconds)
+    response = s3_client.generate_presigned_url(
+        'get_object', Params={'Bucket': S3_BUCKET_NAME, 'Key': email_transcript_object_name}, ExpiresIn=604800)
+    update_session(st.session_state['conversation_id'], response)
+    st.markdown(f"You can [download the transcript]({response}) that was emailed.")
+    print(f"Transcript is stored in S3: s3://{S3_BUCKET_NAME}/{transcript_object_name}")
+    print(f"Transcript zip is stored in S3: s3://{S3_BUCKET_NAME}/{email_transcript_object_name}")
+    print(f"URL to download: {response}")
