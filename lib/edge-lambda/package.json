@@ -1,0 +1,11 @@
+{
+  "name": "devgenius",
+  "version": "0.1.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "cognito-at-edge": "1.5.3",
+    "aws-sdk": "2.1692.0"
+  }
+}
