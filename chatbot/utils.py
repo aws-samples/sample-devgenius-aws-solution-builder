@@ -322,7 +322,7 @@ def create_artifacts_zip(object_name):
         print(f"Couldn't delete directory: {tmpdir}/{conversation_id}. Error: {e}")
 
 
-# Enable button to email conversation history
+# Enable option to download conversation history
 @st.fragment
 def enable_artifacts_download():
     tmp_transcript = []
@@ -334,14 +334,14 @@ def enable_artifacts_download():
     S3_BUCKET_NAME = retrieve_environment_variables('S3_BUCKET_NAME')
     transcript_object_name = f"{st.session_state['conversation_id']}/transcript.md"
     s3_client.put_object(Body=transcript, Bucket=S3_BUCKET_NAME, Key=transcript_object_name)
-    email_transcript_zip_file = "conversation_artifacts.zip"
-    email_transcript_object_name = f"{st.session_state['conversation_id']}/{email_transcript_zip_file}"
-    create_artifacts_zip(email_transcript_zip_file)
+    download_transcript_zip_file = "conversation_artifacts.zip"
+    download_transcript_object_name = f"{st.session_state['conversation_id']}/{download_transcript_zip_file}"
+    create_artifacts_zip(download_transcript_zip_file)
     # Presigned url is valid for 7 days (604800 seconds)
     response = s3_client.generate_presigned_url(
-        'get_object', Params={'Bucket': S3_BUCKET_NAME, 'Key': email_transcript_object_name}, ExpiresIn=604800)
+        'get_object', Params={'Bucket': S3_BUCKET_NAME, 'Key': download_transcript_object_name}, ExpiresIn=604800)
     update_session(st.session_state['conversation_id'], response)
-    st.markdown(f"You can [download the transcript]({response}) that was emailed.")
+    st.markdown(f"You can [download the transcript]({response}) that was generated.")
     print(f"Transcript is stored in S3: s3://{S3_BUCKET_NAME}/{transcript_object_name}")
-    print(f"Transcript zip is stored in S3: s3://{S3_BUCKET_NAME}/{email_transcript_object_name}")
+    print(f"Transcript zip is stored in S3: s3://{S3_BUCKET_NAME}/{download_transcript_object_name}")
     print(f"URL to download: {response}")
