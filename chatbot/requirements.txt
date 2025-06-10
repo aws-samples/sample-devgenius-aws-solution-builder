@@ -4,7 +4,7 @@ boto3==1.34.146
 markdown==3.6
 get-code-from-markdown==1.0.0
 defusedxml==0.7.1
-requests==2.32.3
+requests==2.32.4
 pypdf==5.1.0
 langchain==0.3.7
 langchain-community==0.3.3
