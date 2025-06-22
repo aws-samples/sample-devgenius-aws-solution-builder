@@ -134,10 +134,15 @@ def read_agent_response(event_stream):
                 data = event['chunk']['bytes']
                 agent_answer = data.decode('utf8')
             elif 'trace' in event:
-                print(f"orchestration trace = {event['trace']['trace']['orchestrationTrace']}")
-                if 'observation' in event['trace']['trace']['orchestrationTrace']:
-                    if event['trace']['trace']['orchestrationTrace']['observation']['type'] == "ASK_USER":
-                        ask_user = True
+                tr = event['trace']['trace']  # Trace object in seperate variable
+                orch = tr.get('orchestrationTrace') # Trying to get orchestrationTrace from trace. Diretly calling orchestrationTrace from trace was throwing exception if model access was not properly provided
+                if orch:
+                    print(f"orchestration trace = {event['trace']['trace']['orchestrationTrace']}")  # This line was throwing key error on orchestrationTrace, if model access is not valid, fixed in above line
+                    if 'observation' in event['trace']['trace']['orchestrationTrace']:
+                        if event['trace']['trace']['orchestrationTrace']['observation']['type'] == "ASK_USER":
+                            ask_user = True
+                        else:
+                            ask_user = False
                     else:
                         ask_user = False
                 else:
