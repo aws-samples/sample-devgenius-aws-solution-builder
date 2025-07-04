@@ -40,7 +40,7 @@ DevGenius is built using a modern cloud-native architecture:
 - AWS CLI configured with credentials
 - Python 3.12 or later
 - Docker (for container builds and local development)
-- Access to Amazon Bedrock models (Claude-3-Sonnet/Claude-3-5-Sonnet)
+- Access to Amazon Bedrock models (Claude-3-Sonnet/Claude-3-5-Sonnet/Amazon.Titan-Embed-Text-v2)
 
 ## Installation and Setup
 
