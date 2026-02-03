@@ -8,6 +8,6 @@ requests==2.32.3
 pypdf==5.1.0
 langchain==0.3.7
 langchain-community==0.3.3
-unstructured==0.16.8
+unstructured==0.18.18
 python-pptx==1.0.2
 pyshorteners==1.0.1
