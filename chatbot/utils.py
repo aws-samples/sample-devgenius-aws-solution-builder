@@ -23,7 +23,7 @@ BEDROCK_TEMPERATURE = 0
 sts_client = boto3.client('sts', region_name=AWS_REGION)
 ACCOUNT_ID = sts_client.get_caller_identity()["Account"]
 # Cross Region Inference for improved resilience https://docs.aws.amazon.com/bedrock/latest/userguide/cross-region-inference.html  # noqa
-BEDROCK_MODEL_ID = f"arn:aws:bedrock:{AWS_REGION}:{ACCOUNT_ID}:inference-profile/us.anthropic.claude-3-7-sonnet-20250219-v1:0"  # noqa
+BEDROCK_MODEL_ID = f"arn:aws:bedrock:{AWS_REGION}:{ACCOUNT_ID}:inference-profile/us.anthropic.claude-sonnet-4-6"  # noqa
 
 dynamodb_resource = boto3.resource('dynamodb', region_name=AWS_REGION)
 bedrock_agent_runtime_client = boto3.client('bedrock-agent-runtime', region_name=AWS_REGION)
@@ -231,6 +231,8 @@ def save_conversation(conversation_id, prompt, response):
     item = {
         'conversation_id': conversation_id,
         'uuid': str(uuid.uuid4()),
+        'user_id': st.session_state.get('user_email', ''),
+        'user_name': st.session_state.get('user_name', ''),
         'user_response': prompt,
         'assistant_response': response,
         'conversation_time': datetime.datetime.now(tz=datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
@@ -245,7 +247,6 @@ def save_session(conversation_id, name, email):
         'conversation_id': conversation_id,
         'user_name': name,
         'user_email': email,
-        'aws_midway_user_name': st.session_state.midway_user,
         'session_start_time': datetime.datetime.now(tz=datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
     }
     dynamodb_resource.Table(SESSION_TABLE_NAME).put_item(Item=item)

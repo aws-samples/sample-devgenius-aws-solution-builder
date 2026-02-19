@@ -1,5 +1,5 @@
-FROM public.ecr.aws/docker/library/python:3.12.2-slim-bullseye
-RUN apt-get update && apt-get install --no-install-recommends -y vim gcc graphviz && apt-get clean && rm -rf /var/lib/apt/lists/*
+FROM public.ecr.aws/docker/library/python:3.12-slim-bookworm
+RUN apt-get update && apt-get upgrade -y && apt-get install --no-install-recommends -y vim gcc graphviz curl && apt-get clean && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY ./ /app/
 RUN pip3 install -r requirements.txt --no-cache-dir

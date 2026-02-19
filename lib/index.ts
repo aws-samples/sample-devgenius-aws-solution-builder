@@ -36,7 +36,7 @@ export class DevGeniusStack extends cdk.Stack {
         "https://aws.amazon.com/blogs/architecture/category/analytics/",
     ]
     private readonly BEDROCK_KB_INDEX_NAME = "devgenius"
-    private readonly BEDROCK_AGENT_FOUNDATION_MODEL = "us.anthropic.claude-3-5-sonnet-20241022-v2:0"
+    private readonly BEDROCK_AGENT_FOUNDATION_MODEL = "us.anthropic.claude-sonnet-4-6"
     private readonly BEDROCK_AGENT_INSTRUCTION = `
         You are an AWS Data Analytics and DevOps Expert who will provide thorough,detailed, complete, ready to deploy end to end implementation AWS solutions.
         You provide data analytics solutions using AWS services but not limited to Amazon Athena: Serverless query service to analyze data in Amazon S3 using standard SQL.
@@ -813,11 +813,10 @@ export class DevGeniusStack extends cdk.Stack {
             },
         });
 
-        // generate a random string to make domain name unique
-        const randomString = Math.random().toString(36).substring(2, 10)
+        // hardcoded domain prefix to keep stable across deploys (was previously random)
         const userPoolDomain = userPool.addDomain("UserPoolDomain", {
             cognitoDomain: {
-                domainPrefix: `${cdk.Aws.STACK_NAME}-domain-${randomString}`
+                domainPrefix: "dev-genius-stack-27fc3dc2"
             }
         });
 

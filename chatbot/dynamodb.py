@@ -25,10 +25,12 @@ class DynanmoPersistance():
         self.dynamodb_resource.Table(self.SESSION_TABLE_NAME).put_item(Item=item)
 
     # Store conversation details in DynamoDB
-    def save_conversation(self, conversation_id, prompt, response):
+    def save_conversation(self, conversation_id, prompt, response, user_id='', user_name=''):
         item = {
             'conversation_id': conversation_id,
             'uuid': str(uuid.uuid4()),
+            'user_id': user_id,
+            'user_name': user_name,
             'user_response': prompt,
             'assistant_response': response,
             'conversation_time': datetime.datetime.now(tz=datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")

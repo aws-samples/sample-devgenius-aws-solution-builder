@@ -8,6 +8,7 @@ from utils import read_agent_response
 from utils import enable_artifacts_download
 from utils import retrieve_environment_variables
 from utils import save_conversation
+from utils import save_session
 from utils import invoke_bedrock_model_streaming
 from layout import create_tabs, create_option_tabs, welcome_sidebar, login_page
 from styles import apply_styles
@@ -32,7 +33,7 @@ dynamodb_resource = boto3.resource('dynamodb', region_name=AWS_REGION)
 
 ACCOUNT_ID = sts_client.get_caller_identity()["Account"]
 # Constants
-BEDROCK_MODEL_ID = f"arn:aws:bedrock:{AWS_REGION}:{ACCOUNT_ID}:inference-profile/us.anthropic.claude-3-5-sonnet-20241022-v2:0"  # noqa
+BEDROCK_MODEL_ID = f"arn:aws:bedrock:{AWS_REGION}:{ACCOUNT_ID}:inference-profile/us.anthropic.claude-sonnet-4-6"  # noqa
 CONVERSATION_TABLE_NAME = retrieve_environment_variables("CONVERSATION_TABLE_NAME")
 FEEDBACK_TABLE_NAME = retrieve_environment_variables("FEEDBACK_TABLE_NAME")
 SESSION_TABLE_NAME = retrieve_environment_variables("SESSION_TABLE_NAME")
@@ -174,6 +175,15 @@ if 'interaction' not in st.session_state:
 if not st.session_state.user_authenticated:
     login_page()
 else:
+    # Save session on first load after login
+    if 'session_saved' not in st.session_state:
+        save_session(
+            st.session_state['conversation_id'],
+            st.session_state.get('user_name', ''),
+            st.session_state.get('user_email', '')
+        )
+        st.session_state.session_saved = True
+
     tabs = create_tabs()
     if 'active_tab' not in st.session_state:
         st.session_state.active_tab = "Build a solution"

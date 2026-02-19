@@ -20,13 +20,18 @@ def login_page():
                 label_visibility="visible"
             )
 
+            name = st.text_input("Name", key="login_name", placeholder="Enter your name")
+            email = st.text_input("Email", key="login_email", placeholder="Enter your email")
+
             submit = st.button(
                 "Let's Build AWS Solutions",
-                disabled=not (acknowledged)
+                disabled=not (acknowledged and name and email)
             )
 
             if submit:
                 st.session_state.conversation_id = str(uuid.uuid4())
+                st.session_state.user_name = name
+                st.session_state.user_email = email
                 st.session_state.user_authenticated = True
                 st.rerun()
 
