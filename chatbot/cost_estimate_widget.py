@@ -76,11 +76,11 @@ def generate_cost_estimates(cost_messages):
     | Amazon S3 | 100 GB storage, 100 GB data transfer | $0.023 per GB-month + $0.09 per GB transfer | $11.30 |
     | Amazon CloudFront | 100 GB data transfer, 1M requests | $0.085 per GB + $0.0075 per 10,000 requests | $9.25 |
     | Application Load Balancer | 1 ALB, running 24/7 | $0.0225 per hour + $0.008 per LCU-hour | $16.74 |
-    | Amazon DynamoDB | 25 GB storage, 1M write requests, 1M read requests | $0.25 per GB-month + $1.25 per million write requests + $0.25 per million read requests | $7.75 |
+    | Amazon DynamoDB | 25 GB storage, 1M write requests, 1M read requests | $0.25 per GB-month + $0.625 per million write requests + $0.125 per million read requests | $7.00 |
     | AWS Lambda | 1M invocations, 128 MB memory, 100ms avg. duration | $0.20 per 1M requests + $0.0000166667 per GB-second | $0.41 |
     | Amazon CloudWatch | 5 GB logs ingested, 5 custom metrics | $0.50 per GB ingested + $0.30 per metric per month | $4.00 |
     | Amazon VPC | 1 NAT Gateway, running 24/7 | $0.045 per hour + $0.045 per GB processed | $33.48 |
-    | Total Estimated Monthly Cost | | | $169.83 |
+    | Total Estimated Monthly Cost | | | $169.08 |
 
     Please note:
     1. These estimates assume moderate usage and may vary based on actual workload.
