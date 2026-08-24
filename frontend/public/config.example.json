@@ -1,0 +1,6 @@
+{
+  "region": "us-east-1",
+  "userPoolId": "us-east-1_XXXXXXXXX",
+  "userPoolClientId": "XXXXXXXXXXXXXXXXXXXXXXXXXX",
+  "apiUrl": "https://XXXXXXXXXXXXXXXXXXXXXXXXXX.lambda-url.us-east-1.on.aws/"
+}

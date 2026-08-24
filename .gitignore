@@ -241,7 +241,8 @@ cdk.out
 
 assets
 backups
-chatbot/data
 
-### Lambda packages
-lib/layer/python
+### Frontend build outputs
+frontend/node_modules/
+frontend/dist/
+frontend/public/config.json

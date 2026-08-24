@@ -1,0 +1,4 @@
+# The AWS Lambda Python runtime already bundles boto3/botocore, which provide
+# the Bedrock client and SigV4 signing used here. No third-party packages are
+# required - web search is reached through the AgentCore Gateway, not an
+# external search SDK.

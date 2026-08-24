@@ -1,0 +1,213 @@
+/* Full-height chat column: header, growing scroll area, bottom-pinned input. */
+.dg-chat-col {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 56px); /* viewport minus the top navigation */
+}
+.dg-chat-header {
+  padding: 12px 20px 4px;
+  border-bottom: 1px solid var(--color-border-divider-default, #e9ebed);
+}
+.dg-chat-grow {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.dg-chat-scroll {
+  overflow-y: auto;
+  padding: 16px 20px;
+}
+.dg-chat-input {
+  border-top: 1px solid var(--color-border-divider-default, #e9ebed);
+  padding: 12px 20px 16px;
+  background: var(--color-background-container-content, #fff);
+}
+
+/* Attachment preview above the input. */
+.dg-attach-preview {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px 6px 6px;
+  border: 1px solid var(--color-border-divider-default, #d5dbdb);
+  border-radius: 8px;
+  background: var(--color-background-container-content, #fff);
+  max-width: 320px;
+}
+.dg-attach-thumb {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex: 0 0 auto;
+}
+.dg-attach-name {
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1 1 auto;
+}
+
+/* Image shown inside a sent user message bubble. */
+.dg-msg-img {
+  max-width: 260px;
+  max-height: 200px;
+  border-radius: 8px;
+  display: block;
+}
+
+/* Left-rail conversation list. */
+.dg-conv-list {
+  height: 100%;
+  overflow-y: auto;
+}
+.dg-conv-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 8px 6px 10px;
+  margin: 0 6px;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+}
+.dg-conv-item:hover {
+  background: var(--color-background-item-hover, #f4f4f4);
+}
+.dg-conv-active {
+  background: var(--color-background-item-selected, #e9f2ff);
+}
+.dg-conv-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.dg-conv-del {
+  flex: 0 0 auto;
+  visibility: hidden;
+}
+.dg-conv-item:hover .dg-conv-del,
+.dg-conv-active .dg-conv-del {
+  visibility: visible;
+}
+.dg-conv-title {
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dg-conv-time {
+  font-size: 11px;
+  color: var(--color-text-body-secondary, #5f6b7a);
+}
+
+/* Scrollable artifact output (long IaC / docs). */
+.dg-artifact {
+  max-height: 520px;
+  overflow: auto;
+}
+
+/* Professional, HTML-styled rendering of model markdown. */
+.dg-markdown {
+  line-height: 1.6;
+  color: var(--color-text-body-default, #16191f);
+}
+.dg-markdown p {
+  margin: 0 0 12px;
+}
+.dg-markdown h1,
+.dg-markdown h2,
+.dg-markdown h3,
+.dg-markdown h4 {
+  margin: 22px 0 10px;
+  line-height: 1.3;
+  font-weight: 700;
+  color: var(--color-text-heading-default, #0f1b2a);
+}
+.dg-markdown h1 {
+  font-size: 26px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--color-border-divider-default, #e9ebed);
+}
+.dg-markdown h2 {
+  font-size: 21px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--color-border-divider-default, #e9ebed);
+}
+.dg-markdown h3 {
+  font-size: 17px;
+}
+.dg-markdown h4 {
+  font-size: 15px;
+}
+.dg-markdown ul,
+.dg-markdown ol {
+  margin: 0 0 12px;
+  padding-left: 24px;
+}
+.dg-markdown li {
+  margin: 4px 0;
+}
+.dg-markdown blockquote {
+  margin: 0 0 12px;
+  padding: 4px 14px;
+  border-left: 4px solid var(--color-border-status-info, #0972d3);
+  background: var(--color-background-status-info, #f0f8ff);
+  color: var(--color-text-body-secondary, #414d5c);
+}
+.dg-markdown hr {
+  border: none;
+  border-top: 1px solid var(--color-border-divider-default, #e9ebed);
+  margin: 20px 0;
+}
+.dg-markdown pre {
+  background: #1f2937;
+  color: #f8f9fa;
+  padding: 14px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: 13px;
+  margin: 0 0 12px;
+}
+.dg-markdown pre code {
+  background: none;
+  color: inherit;
+  padding: 0;
+}
+.dg-markdown code {
+  font-family: Monaco, Menlo, Consolas, monospace;
+  font-size: 0.88em;
+  background: var(--color-background-code-editor-gutter-default, #f1f3f4);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+.dg-markdown img {
+  max-width: 100%;
+}
+
+.dg-table-wrap {
+  overflow-x: auto;
+}
+.dg-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 14px;
+}
+.dg-table th,
+.dg-table td {
+  border: 1px solid var(--color-border-divider-default, #d5dbdb);
+  padding: 8px 12px;
+  text-align: left;
+}
+.dg-table th {
+  background: var(--color-background-container-header, #f2f3f3);
+  font-weight: 700;
+}
